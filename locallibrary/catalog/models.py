@@ -1,7 +1,6 @@
+import uuid  # Required for unique book instances
 from django.db import models
-
 from django.urls import reverse  # Used in get_absolute_url() to get URL for specified ID
-
 from django.db.models import UniqueConstraint  # Constrains fields to unique values
 from django.db.models.functions import Lower  # Returns lower cased value of field
 
@@ -32,6 +31,32 @@ class Genre(models.Model):
         ]
 
 
+class Language(models.Model):
+    """Model representing a language."""
+    name = models.CharField(
+        max_length=50,
+        unique=True,
+        help_text="Enter a language (e.g. English, Chinese, German, etc.)"
+    )
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular genre instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message="Language already exists (case insensitive match)"
+            ),
+        ]
+
+
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=200)
@@ -50,6 +75,7 @@ class Book(models.Model):
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(
         Genre, help_text="Select a genre for this book")
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -59,10 +85,8 @@ class Book(models.Model):
         """Returns the URL to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
 
-import uuid # Required for unique book instances
 
 class BookInstance(models.Model):
-
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular book across whole library")
@@ -91,6 +115,7 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
+
 
 class Author(models.Model):
     """Model representing an author."""
