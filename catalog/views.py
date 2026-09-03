@@ -1,3 +1,6 @@
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import QuerySet
 from django.shortcuts import render
 from django.views import generic
 
@@ -60,3 +63,24 @@ class AuthorListView(generic.ListView):
 
 class AuthorDetailView(generic.DetailView):
     model = Author
+
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 2
+
+    def get_queryset(self):
+        return (BookInstance.objects.filter(borrower=self.request.user)
+                .filter(status='o')
+                .order_by('due_back'))
+
+
+class LoanedBooksListView(PermissionRequiredMixin, generic.ListView):
+    permission_required = ('catalog.can_mark_returned', 'catalog.change_bookinstance')
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed.html'
+    paginate_by = 2
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(status='o').order_by('due_back')
