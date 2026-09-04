@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add our new app
     'catalog.apps.CatalogConfig',
+    'todolist.apps.TodolistConfig',
 ]
 
 MIDDLEWARE = [
