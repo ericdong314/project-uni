@@ -1,0 +1,10 @@
+from django.urls import path
+from django.views.generic import RedirectView
+
+from . import views
+
+urlpatterns = [
+    path('', RedirectView.as_view(url='items/', permanent=True)),
+    path('items/', views.ItemListView.as_view(), name='items'),
+    path('item/create/', views.create_item, name='create_item')
+]

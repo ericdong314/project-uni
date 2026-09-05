@@ -1,0 +1,8 @@
+<h1>Items:</h1>
+{% for item in item_list %}
+    <li>{{ item.name }}</li>
+{% empty %}
+    <p>There are not items yet.</p>
+    <p>Click <a href="{% url 'create_item' %}">here</a> to create one!</p>
+
+{% endfor %}

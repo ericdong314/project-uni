@@ -98,11 +98,11 @@ def renew_book_librarian(request, pk):
     if request.method == "POST":
         form = RenewBookForm(request.POST)
         if form.is_valid():
-            book_instance.due_back = form.cleaned_data['renewal_date']
+            book_instance.due_back = form.cleaned_data['due_back']
             book_instance.save()
             return HttpResponseRedirect(reverse('all-borrowed'))
     else:
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = RenewBookForm(initial={'renewal_date': proposed_renewal_date})
+        form = RenewBookForm(initial={'due_back': proposed_renewal_date})
     context = {'form': form, 'book_instance': book_instance}
     return render(request, 'catalog/book_renew_librarian.html', context)
