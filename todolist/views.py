@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
@@ -6,10 +7,16 @@ from django.views import generic
 from .models import Item
 from .forms import CreateItemForm
 
+
 # Create your views here.
+def home_page(request):
+    return HttpResponse('<html><title>To-Do lists<title/><html/>')
+
+
 
 class ItemListView(generic.ListView):
     model = Item
+
 
 def create_item(request):
     if request.method == 'POST':
@@ -22,5 +29,5 @@ def create_item(request):
             return HttpResponseRedirect(reverse('items'))
     else:
         form = CreateItemForm(initial={'name': 'Change me!'})
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'create_item.html', context=context)
