@@ -221,7 +221,7 @@ __marimo__/
 *.bak 
 
 # Database
-#*.sqlite3
+*.sqlite3
 
 .idea/
 # Elastic Beanstalk Files
