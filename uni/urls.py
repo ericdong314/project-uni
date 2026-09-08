@@ -25,5 +25,6 @@ urlpatterns = [
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('catalog/', include('catalog.urls')),
                   path('todo/', include('todolist.urls')),
+                  path('klipper/', include('klipper.urls')),
                   path('', RedirectView.as_view(url='catalog/', permanent=True)),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

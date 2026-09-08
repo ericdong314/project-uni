@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Add our new app
     'catalog.apps.CatalogConfig',
     'todolist.apps.TodolistConfig',
+    'klipper.apps.KlipperConfig',
 ]
 
 MIDDLEWARE = [

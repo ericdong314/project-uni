@@ -6,6 +6,9 @@ class TestKlipper(unittest.TestCase):
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
 
+    def tearDown(self) -> None:
+        self.browser.quit()
+
     def test_user_add_website(self):
         # Eric opens the page 'klipper/' sees the title 'Klipper',
         self.browser.get('http://localhost:8000/klipper/')
