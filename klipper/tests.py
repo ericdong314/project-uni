@@ -1,8 +1,10 @@
+from django.db.models import Model
 from django.http.request import HttpRequest
 from django.test import TestCase
 from django.urls import resolve
 
-from klipper.views import home_page
+from .views import home_page
+from .models import Item
 
 
 # Create your tests here.
@@ -21,3 +23,17 @@ class TestHomePage(TestCase):
         response = home_page(request)
         html = response.content.decode('utf8')
         self.assertIn('<title>Klipper</title>', html)
+
+
+class TestAddItem(TestCase):
+    example_link = 'https://example.com/'
+
+    def test_add_item(self):
+        self.client.post('/klipper/create/', data={'link': self.example_link})
+        item = Item.objects.last()
+        self.assertEqual(item.link, self.example_link)
+
+    def test_list_items(self):
+        Item.objects.create(link=self.example_link)
+        response = self.client.get('/klipper/')
+        self.assertContains(response, self.example_link)
