@@ -12,6 +12,10 @@ class TestHomePage(TestCase):
         match = resolve('/klipper/')
         self.assertEqual(match.func, home_page)
 
+    def test_view_uses_correct_template(self):
+        response = self.client.get('/klipper/')
+        self.assertTemplateUsed(response, 'home.html')
+
     def test_view_returns_correct_html(self):
         request = HttpRequest()
         response = home_page(request)
