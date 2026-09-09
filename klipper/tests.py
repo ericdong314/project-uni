@@ -30,7 +30,7 @@ class TestAddItem(TestCase):
 
     def test_add_item(self):
         self.client.post('/klipper/create/', data={'link': self.example_link})
-        item = Item.objects.last()
+        item = Item.objects.get(id=1)
         self.assertEqual(item.link, self.example_link)
 
     def test_list_items(self):
