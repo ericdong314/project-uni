@@ -22,7 +22,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # She is invited to create a to-do item with a text box straight away.
         input_box = self.browser.find_element(By.ID, 'id_new_item')
-        self.assertEqual(input_box.get_attribute('place_holder'), 'Enter a to-do item')
+        self.assertEqual(input_box.get_attribute('placeholder'), 'Enter a to-do item')
 
         # She types in it "Buy a new pen."
         input_box.send_keys('Buy a new pen')
@@ -34,7 +34,7 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element(By.ID, 'id_list_table')
         rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertTrue(any(row.text == '1: Buy a new pen.' for row in rows))
+        self.assertTrue(any(row.text == '1: Buy a new pen.' for row in rows), 'New to-to item did not appear in table')
 
         # These is still an input box inviting he to add another item.
         # She now enters "Buy a notebook." in the input box.
