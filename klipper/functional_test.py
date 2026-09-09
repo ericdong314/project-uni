@@ -29,9 +29,9 @@ class TestKlipper(unittest.TestCase):
 
         # The page updates with the link added to the page as an item in a list.
         time.sleep(1)
-        table = self.browser.find_element(By.ID, 'id_items_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertTrue(any(url in row.text for row in rows), 'url not found in table')
+        table = self.browser.find_element(By.ID, 'id_item_list')
+        rows = table.find_elements(By.TAG_NAME, 'li')
+        self.assertTrue(any(url in row.text for row in rows), 'url not found in list')
 
         # There is still a text box inviting him to enter another URL.
         self.fail('To complete')
