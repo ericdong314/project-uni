@@ -223,6 +223,9 @@ __marimo__/
 # Database
 *.sqlite3
 
+# STATIC_ROOT
+staticfiles
+
 .idea/
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
