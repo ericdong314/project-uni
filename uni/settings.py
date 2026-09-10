@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['library-env.eba-674emtxm.us-west-2.elasticbeanstalk.com', 'loc
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic', # handle static files with whitenoise in development
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -114,10 +115,10 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-# Static file serving.
+
+# Static file serving caching.
 # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
 STORAGES = {
-    # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
