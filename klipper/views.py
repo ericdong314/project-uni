@@ -21,4 +21,4 @@ def home_page(request):
 
     items = Item.objects.order_by('id')
     context = {'item_list': items, 'form': form}
-    return render(request, 'home.html', context)
+    return render(request, 'klipper/home.html', context)

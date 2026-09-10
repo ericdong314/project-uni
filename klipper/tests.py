@@ -16,7 +16,7 @@ class TestHomePage(TestCase):
 
     def test_view_uses_correct_template(self):
         response = self.client.get('/klipper/')
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertTemplateUsed(response, 'klipper/home.html')
 
     def test_view_returns_correct_html(self):
         request = HttpRequest()
