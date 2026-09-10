@@ -13,3 +13,7 @@ class HomePageTest(TestCase):
     def test_renders_homepage_content(self):
         response = self.client.get('/todo/')
         self.assertContains(response, 'To-Do')
+
+    def test_add_item(self):
+        response = self.client.post('/todo/', {'item_text': 'A new item.'})
+        self.assertContains(response, 'A new item.')
