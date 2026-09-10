@@ -1,5 +1,10 @@
 <html lang="en">
 <title>Klipper</title>
+<form action="" method="post">
+    {% csrf_token %}
+    <table>{{ form.as_table }}</table>
+    <input type="submit" value="Add">
+</form>
 {% if item_list %}
     <ol id="id_item_list">
         {% for item in item_list %}
@@ -7,10 +12,5 @@
         {% endfor %}
     </ol>
 {% endif %}
-<form action="" method="post">
-    {% csrf_token %}
-    <table>{{ form.as_table }}</table>
-    <input type="submit" value="Confirm">
-</form>
 </html>
 
