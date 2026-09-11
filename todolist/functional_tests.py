@@ -36,11 +36,24 @@ class NewVisitorTest(unittest.TestCase):
         rows = table.find_elements(By.TAG_NAME, 'tr')
         self.assertIn('1: Buy a new pen.', [row.text for row in rows])
 
-        # These is still an input box inviting he to add another item.
+        # There is still an input box inviting he to add another item.
+        input_box = self.browser.find_element(By.ID, 'id_new_item')
+        self.assertEqual(input_box.get_attribute('placeholder'), 'Enter a to-do item')
+
         # She now enters "Buy a notebook." in the input box.
+        # She presses enter and the page updates with both items displayed on the list.
+        input_box.send_keys("Buy a notebook.")
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        # todo: refactor the code for checking string in table.
+        table = self.browser.find_element(By.ID, 'id_list_table')
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        self.assertIn('1: Buy a new pen.', [row.text for row in rows])
+        self.assertIn('2: Buy a notebook.', [row.text for row in rows])
+
         self.fail('Finish the test!')
 
-        # She presses enter and the page updates with both items displayed on the list.
 
         # She is now happy and closes the tab.
 
