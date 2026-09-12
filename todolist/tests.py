@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 from django.test import TestCase
+from django.urls import reverse
 
 from .models import Item
 from .views import home_page
@@ -21,8 +22,7 @@ class HomePageTest(TestCase):
         response = self.client.post('/todo/', {'item_text': 'A new item.'})
         self.assertEqual(Item.objects.count(), 1)
         self.assertEqual(Item.objects.get(pk=1).text, 'A new item.')
-        self.assertContains(response, 'A new item.')
-        self.assertTemplateUsed('home.html')
+        self.assertRedirects(response, reverse('todolist:home'))
 
     def test_only_saves_items_when_necessary(self):
         self.client.get("/")
