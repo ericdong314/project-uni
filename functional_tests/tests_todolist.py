@@ -3,8 +3,11 @@ import unittest
 
 from django.test import LiveServerTestCase, override_settings
 from selenium import webdriver
+from selenium.common import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
+MAX_WAIT = 5
 
 
 class NewVisitorTest(LiveServerTestCase):
@@ -14,10 +17,18 @@ class NewVisitorTest(LiveServerTestCase):
     def tearDown(self) -> None:
         self.browser.quit()
 
-    def assert_text_in_table(self, text):
-        table = self.browser.find_element(By.ID, 'id_list_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertIn(text, [row.text for row in rows])
+    def wait_for_row_text_in_table(self, text):
+        start_time = time.time()
+        while True:
+            try:
+                table = self.browser.find_element(By.ID, 'id_list_table')
+                rows = table.find_elements(By.TAG_NAME, 'tr')
+                self.assertIn(text, [row.text for row in rows])
+                return
+            except (AssertionError, WebDriverException):
+                if time.time() > start_time + MAX_WAIT:
+                    raise
+                time.sleep(0.5)
 
     # @override_settings(DEBUG=True)  # <-- This forces Django to show the actual error page/traceback
     def test_create_items(self):
@@ -39,7 +50,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        self.assert_text_in_table('1: Buy a new pen.')
+        self.wait_for_row_text_in_table('1: Buy a new pen.')
 
         # There is still an input box inviting he to add another item.
         input_box = self.browser.find_element(By.ID, 'id_new_item')
@@ -51,7 +62,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        self.assert_text_in_table('1: Buy a new pen.')
-        self.assert_text_in_table('2: Buy a notebook.')
+        self.wait_for_row_text_in_table('1: Buy a new pen.')
+        self.wait_for_row_text_in_table('2: Buy a notebook.')
 
         # She is now happy and closes the tab.
