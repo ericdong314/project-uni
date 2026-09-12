@@ -1,11 +1,13 @@
 import time
 import unittest
+
+from django.test import LiveServerTestCase, override_settings
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
 
@@ -17,9 +19,10 @@ class NewVisitorTest(unittest.TestCase):
         rows = table.find_elements(By.TAG_NAME, 'tr')
         self.assertIn(text, [row.text for row in rows])
 
+    # @override_settings(DEBUG=True)  # <-- This forces Django to show the actual error page/traceback
     def test_create_items(self):
         # Alison visits the website and notices that the page title and header mention to-do lists.
-        self.browser.get('http://localhost:8000/todo/')
+        self.browser.get(self.live_server_url + '/todo/')
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
         self.assertIn('To-Do', header_text)
@@ -52,7 +55,3 @@ class NewVisitorTest(unittest.TestCase):
         self.assert_text_in_table('2: Buy a notebook.')
 
         # She is now happy and closes the tab.
-
-
-if __name__ == '__main__':
-    unittest.main()
