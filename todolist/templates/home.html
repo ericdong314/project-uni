@@ -6,9 +6,9 @@
     <input id="id_new_item" name="item_text" placeholder="Enter a to-do item">
 </form>
 <table id="id_list_table">
-    {% for i, item in item_list %}
+    {% for item in item_list %}
         <tr>
-            <td>{{ i }}: {{ item.text }}</td>
+            <td>{{ forloop.counter }}: {{ item.text }}</td>
         </tr>
     {% empty %}
         There are no items yet.

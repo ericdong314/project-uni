@@ -51,8 +51,6 @@ class NewVisitorTest(unittest.TestCase):
         self.assert_text_in_table('1: Buy a new pen.')
         self.assert_text_in_table('2: Buy a notebook.')
 
-        self.fail('Finish the test!')
-
         # She is now happy and closes the tab.
 
 

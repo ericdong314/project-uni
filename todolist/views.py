@@ -12,5 +12,5 @@ def home_page(request):
         Item.objects.create(text=text)
         return redirect('todolist:home')
 
-    context = {'item_list': enumerate(Item.objects.all(), start=1)}
+    context = {'item_list': Item.objects.all()}
     return render(request, 'home.html', context=context)
