@@ -8,10 +8,14 @@ from selenium.webdriver.common.keys import Keys
 class NewVisitorTest(unittest.TestCase):
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
-        ...
 
     def tearDown(self) -> None:
         self.browser.quit()
+
+    def assert_text_in_table(self, text):
+        table = self.browser.find_element(By.ID, 'id_list_table')
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        self.assertIn(text, [row.text for row in rows])
 
     def test_create_items(self):
         # Alison visits the website and notices that the page title and header mention to-do lists.
@@ -32,9 +36,7 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        table = self.browser.find_element(By.ID, 'id_list_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertIn('1: Buy a new pen.', [row.text for row in rows])
+        self.assert_text_in_table('1: Buy a new pen.')
 
         # There is still an input box inviting he to add another item.
         input_box = self.browser.find_element(By.ID, 'id_new_item')
@@ -46,14 +48,10 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        # todo: refactor the code for checking string in table.
-        table = self.browser.find_element(By.ID, 'id_list_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertIn('1: Buy a new pen.', [row.text for row in rows])
-        self.assertIn('2: Buy a notebook.', [row.text for row in rows])
+        self.assert_text_in_table('1: Buy a new pen.')
+        self.assert_text_in_table('2: Buy a notebook.')
 
         self.fail('Finish the test!')
-
 
         # She is now happy and closes the tab.
 
