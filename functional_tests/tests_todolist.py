@@ -30,9 +30,8 @@ class NewVisitorTest(LiveServerTestCase):
                     raise
                 time.sleep(0.5)
 
-    # @override_settings(DEBUG=True)  # <-- This forces Django to show the actual error page/traceback
     def test_create_items(self):
-        # Alison visits the website and notices that the page title and header mention to-do lists.
+        # Edith visits the website and notices that the page title and header mention to-do lists.
         self.browser.get(self.live_server_url + '/todo/')
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
@@ -60,9 +59,43 @@ class NewVisitorTest(LiveServerTestCase):
         # She presses enter and the page updates with both items displayed on the list.
         input_box.send_keys("Buy a notebook.")
         input_box.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         self.wait_for_row_text_in_table('1: Buy a new pen.')
         self.wait_for_row_text_in_table('2: Buy a notebook.')
 
         # She is now happy and closes the tab.
+
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        # Edith visits the site first and add an item to her list
+        self.browser.get(self.live_server_url + '/todo/')
+        input_box = self.browser.find_element(By.ID, 'id_new_item')
+        input_box.send_keys('Buy a new pen.')
+        input_box.send_keys(Keys.ENTER)
+        self.wait_for_row_text_in_table('1: Buy a new pen.')
+
+        # Assert that Edith gets a url for her list
+        url_edith = self.browser.current_url
+        self.assertRegex(url_edith, '/todo/lists/.+')
+
+        # Patrick now visits the site and add an item to his list.
+        ## We use cookie deletion to simulate the change of users.
+        self.browser.delete_all_cookies()
+
+        page_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        self.assertNotIn('Buy a new pen.', page_text)
+        input_box = self.browser.find_element(By.ID, 'id_new_item')
+        input_box.send_keys('Buy a watermelon.')
+        input_box.send_keys(Keys.ENTER)
+
+        # His item appears in the list
+        self.wait_for_row_text_in_table('1: Buy a watermelon.')
+
+        # Check that Patrick gets his own url.
+        url_patrick = self.browser.current_url
+        self.assertRegex(url_patrick, '/todo/lists/.+')
+        self.assertNotEqual(url_patrick, url_edith)
+
+        # Check that only Patrick's items are shown on his page.
+        page_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        self.assertIn('Buy a watermelon.', page_text)
+        self.assertNotIn('Buy a new pen.', page_text)
