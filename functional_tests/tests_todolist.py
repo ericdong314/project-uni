@@ -1,5 +1,5 @@
+import os
 import time
-import unittest
 
 from django.test import LiveServerTestCase, override_settings
 from selenium import webdriver
@@ -13,6 +13,8 @@ MAX_WAIT = 5
 class NewVisitorTest(LiveServerTestCase):
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
+        if test_server := os.environ.get('TEST_SERVER'):
+            self.live_server_url = 'http://' + test_server
 
     def tearDown(self) -> None:
         self.browser.quit()
