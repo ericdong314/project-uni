@@ -9,6 +9,10 @@ RUN pip install -r /tmp/requirements.txt
 COPY src /src
 WORKDIR /src
 
-RUN python manage.py collectstatic # Error if placed after the setting of DJANGO_DEBUG_FALSE.
+RUN python manage.py collectstatic --noinput # Error if placed after the setting of DJANGO_DEBUG_FALSE.
 ENV DJANGO_DEBUG_FALSE=1
+
+RUN adduser --uid 1234 nonroot
+USER nonroot
+
 CMD ["gunicorn", "--bind", ":8888", "uni.wsgi:application"]
