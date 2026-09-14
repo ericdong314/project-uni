@@ -13,7 +13,7 @@ import os
 from logging import DEBUG
 from pathlib import Path
 
-from django.conf.global_settings import SECRET_KEY
+from django.conf.global_settings import SECRET_KEY, CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -152,3 +152,6 @@ LOGGING = {
         "root": {"handlers": ["console"], "level": "INFO"},
     },
 }
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
