@@ -36,7 +36,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic', # handle static files with whitenoise in development
+    'whitenoise.runserver_nostatic',  # handle static files with whitenoise in development
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -124,7 +124,6 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-
 # Static file serving caching.
 # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
 STORAGES = {
@@ -142,3 +141,14 @@ LOGIN_REDIRECT_URL = '/'
 
 # log emails sent to the console.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "root": {"handlers": ["console"], "level": "INFO"},
+    },
+}
