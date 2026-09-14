@@ -8,4 +8,7 @@ RUN pip install -r /tmp/requirements.txt
 
 COPY src /src
 WORKDIR /src
+
+RUN python manage.py collectstatic # Error if placed after the setting of DJANGO_DEBUG_FALSE.
+ENV DJANGO_DEBUG_FALSE=1
 CMD ["gunicorn", "--bind", ":8888", "uni.wsgi:application"]
