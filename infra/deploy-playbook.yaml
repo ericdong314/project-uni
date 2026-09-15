@@ -1,4 +1,25 @@
 - hosts: all
   tasks:
-    - name: Ping to make sure we can talk to our server
-      ansible.builtin.ping:
+    - name: Install docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Add user to the docker group
+      ansible.builtin.user:
+        name: '{{ ansible_user }}'
+        groups: docker
+        append: true # don't remove any existing groups
+      become: true
+
+    - name: Reset connection to reflect group change
+      ansible.builtin.meta: reset_connection
+
+    - name: Run test container
+      community.docker.docker_container:
+        name: testcontainer
+        state: started
+        image: busybox
+        command: echo hello world
