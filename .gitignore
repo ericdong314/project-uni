@@ -232,3 +232,5 @@ staticfiles
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+inventory.ini

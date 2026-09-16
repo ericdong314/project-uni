@@ -17,9 +17,32 @@
     - name: Reset connection to reflect group change
       ansible.builtin.meta: reset_connection
 
-    - name: Run test container
+    - name: Build project image locally
+      ansible.builtin.command: docker build -t uni ..
+      delegate_to: 127.0.0.1
+
+    - name: Export project image locally
+      community.docker.docker_image:
+        name: uni
+        archive_path: /tmp/uni-img.tar
+        source: local
+      delegate_to: 127.0.0.1
+
+    - name: Copy archive to server
+      ansible.builtin.copy:
+        src: /tmp/uni-img.tar
+        dest: /tmp/uni-img.tar
+
+    - name: Load image from archive
+      community.docker.docker_image:
+        name: uni
+        source: load
+        load_path: /tmp/uni-img.tar
+        force_source: true
+
+    - name: Spin up a container using the image
       community.docker.docker_container:
-        name: testcontainer
+        name: uni
+        image: uni
         state: started
-        image: busybox
-        command: echo hello world
+        recreate: true
