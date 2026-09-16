@@ -40,9 +40,43 @@
         load_path: /tmp/uni-img.tar
         force_source: true
 
+    - name: Create a random password on the server if haven't
+      ansible.builtin.copy:
+        dest: ~/.secret-key
+        content: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
+        mode: 0600
+        force: false  # do not recreate file if it already exists.
+
+    - name: Read secret key back from file
+      ansible.builtin.slurp:
+        src: ~/.secret-key
+      register: secret_key
+
+    - name: Ensure db.sqlite3 exists outside container
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env'].HOME }}/db.sqlite3"
+        state: touch
+        owner: 1234
+      become: true
+
     - name: Spin up a container using the image
       community.docker.docker_container:
         name: uni
         image: uni
         state: started
         recreate: true
+        env:
+          DJANGO_DEBUG_FALSE: "1"
+          DJANGO_SECRET_KEY: "{{ secret_key.content | b64decode }}"
+          DJANGO_DB_PATH: "/home/nonroot/db.sqlite3"
+          DJANGO_ALLOWED_HOST: "{{ inventory_hostname }}"
+        ports: 80:8888
+        mounts:
+          - type: bind
+            source: "{{ ansible_facts['env'].HOME }}/db.sqlite3"
+            target: /home/nonroot/db.sqlite3
+
+    - name: Run migration inside container
+      community.docker.docker_container_exec:
+        container: uni
+        command: python3 ./manage.py migrate

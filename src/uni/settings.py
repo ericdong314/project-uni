@@ -153,5 +153,6 @@ LOGGING = {
     },
 }
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# todo: if enabled, causes CSRF error when creating new item
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
