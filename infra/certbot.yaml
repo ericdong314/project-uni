@@ -1,0 +1,45 @@
+- hosts: all
+  tasks:
+    - name: Stop the container
+      community.docker.docker_container:
+        name: uni
+        state: stopped
+
+    - name: 1 & 2. Install system dependencies
+      ansible.builtin.apt:
+        pkg:
+          - python3
+          - python3-dev
+          - python3-venv
+          - libaugeas-dev
+          - gcc
+        update_cache: true
+      become: true
+
+    - name: 3. Remove existing Certbot packages
+      ansible.builtin.apt:
+        pkg: certbot
+        state: absent
+      become: true
+
+    - name: 4 & 5. Install Certbot in a virtual environment
+      ansible.builtin.pip:
+        name:
+          - pip
+          - certbot
+        state: latest
+        virtualenv: /opt/certbot/
+        virtualenv_command: python3 -m venv
+      become: true
+
+    - name: 6. Create a symlink for the Certbot command
+      ansible.builtin.file:
+        src: /opt/certbot/bin/certbot
+        dest: /usr/local/bin/certbot
+        state: link
+      become: true
+
+#    This command is interactive & best run manually
+#    - name: 7. Run the certbot command
+#      ansible.builtin.command: certbot certonly --standalone
+#      become: true

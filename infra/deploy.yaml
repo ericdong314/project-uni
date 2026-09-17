@@ -59,6 +59,14 @@
         owner: 1234
       become: true
 
+    - name: Copy tls cert and key with owner change
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/etc/letsencrypt/archive/{{ inventory_hostname }}/"
+        dest: "{{ ansible_facts['env'].HOME }}/tls"
+        owner: 1234
+      become: true
+
     - name: Spin up a container using the image
       community.docker.docker_container:
         name: uni
@@ -70,11 +78,16 @@
           DJANGO_SECRET_KEY: "{{ secret_key.content | b64decode }}"
           DJANGO_DB_PATH: "/home/nonroot/db.sqlite3"
           DJANGO_ALLOWED_HOST: "{{ inventory_hostname }}"
-        ports: 80:8888
+          TLS_DIR: "/home/nonroot/tls"
+        ports: 443:8888
         mounts:
           - type: bind
             source: "{{ ansible_facts['env'].HOME }}/db.sqlite3"
             target: /home/nonroot/db.sqlite3
+          - type: bind
+            source:  "{{ ansible_facts['env'].HOME }}/tls"
+            target: /home/nonroot/tls
+            read_only: true
 
     - name: Run migration inside container
       community.docker.docker_container_exec:
