@@ -27,11 +27,9 @@ if "DJANGO_DEBUG_FALSE" in os.environ:
     DEBUG = False
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOST']]
-    db_path = os.environ['DJANGO_DB_PATH']
 else:
     DEBUG = True
     SECRET_KEY = 'django-insecure-key-for-dev'
-    db_path = BASE_DIR / 'db.sqlite3'
 
 # Application definition
 
@@ -84,9 +82,12 @@ WSGI_APPLICATION = 'uni.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': db_path,
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'pdb'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOSTNAME', '127.0.0.1'),
+        'PORT': '5432',
     }
 }
 
