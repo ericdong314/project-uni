@@ -6,7 +6,7 @@ services:
     ports:
      - "8888:8888"
     env_file:
-      - ./.env.prod
+      - ./.env.dev
     volumes:
       - ./src/db.sqlite3:/home/nonroot/db.sqlite3
       - ./src:/src
@@ -15,7 +15,7 @@ services:
     image: postgres:18
     restart: unless-stopped
     env_file:
-      - ./.env.prod
+      - ./.env.dev
     volumes:
       - db-data:/var/lib/postgresql/
     ports:
