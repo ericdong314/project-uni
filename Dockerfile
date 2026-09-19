@@ -1,5 +1,7 @@
 FROM python:3.14-slim
 
+RUN apt-get update && apt-get install -y gosu
+
 RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
