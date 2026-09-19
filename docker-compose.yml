@@ -2,14 +2,12 @@ services:
   web:
     container_name: uni
     build: .
-    command: gunicorn -c ./gunicorn.conf.py
     ports:
-     - "8888:8888"
+      - "8888:8888"
     env_file:
       - ./.env.dev
     volumes:
-      - ./src/db.sqlite3:/home/nonroot/db.sqlite3
-      - ./src:/src
+      - static-volume:/src/staticfiles/
     depends_on:
       - db
   db:
@@ -26,6 +24,7 @@ services:
     container_name: nginx
     image: nginx:1.31
     volumes:
+      - static-volume:/var/www/staticfiles/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
@@ -35,3 +34,4 @@ services:
 
 volumes:
   db-data:
+  static-volume:

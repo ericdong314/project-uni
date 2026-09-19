@@ -9,8 +9,9 @@ RUN pip install -r /tmp/requirements.txt
 COPY src /src
 WORKDIR /src
 
-# collectstatic reads settings.py and throws an exception if an env var has no placeholder value.
-RUN python manage.py collectstatic --noinput
+RUN chmod +x /src/entrypoint.sh
 
 RUN adduser --uid 1234 nonroot
-USER nonroot
+
+ENTRYPOINT ["/src/entrypoint.sh"]
+CMD ["gunicorn", "-c", "./gunicorn.conf.py"]
