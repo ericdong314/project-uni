@@ -1,0 +1,11 @@
+services:
+  web:
+    env_file:
+      - ./.env.dev
+    command:
+      - python3 manage.py runserver
+    ports:
+      - "8000:8000"
+  db:
+    env_file:
+      - ./.env.dev
