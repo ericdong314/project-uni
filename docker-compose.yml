@@ -3,7 +3,7 @@ services:
     container_name: uni
     build: .
     entrypoint:
-      - /src/entrypoint.sh
+      - /src/collect_and_step_down.sh
     command:
       - gunicorn
       - -c
