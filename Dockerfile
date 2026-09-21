@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y gosu
 RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
+# todo: separate dev and prod requirements
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
