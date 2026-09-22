@@ -1,5 +1,8 @@
 services:
   web:
+    build:
+      context: .
+      target: prod
     entrypoint:
       - /src/collect_and_step_down.sh
     command:

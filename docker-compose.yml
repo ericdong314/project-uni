@@ -1,7 +1,6 @@
 services:
   web:
-    container_name: uni
-    build: .
+    container_name: web
     depends_on:
       - db
   db:

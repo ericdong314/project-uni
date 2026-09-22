@@ -1,5 +1,8 @@
 services:
   web:
+    build:
+      context: .
+      target: dev
     env_file:
       - ./.env.dev
     command:

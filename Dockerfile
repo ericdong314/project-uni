@@ -1,15 +1,15 @@
-FROM python:3.14-slim
-
+FROM python:3.14-slim AS base
 RUN apt-get update && apt-get install -y gosu
-
 RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
-
-# todo: separate dev and prod requirements
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-
+COPY requirements/base.txt /tmp/requirements/base.txt
+RUN pip install -r /tmp/requirements/base.txt
 COPY src /src
 WORKDIR /src
 
+FROM base AS dev
+COPY requirements/dev.txt /tmp/requirements/dev.txt
+RUN pip install -r /tmp/requirements/dev.txt
+
+FROM base AS prod
 RUN adduser --uid 1234 nonroot
