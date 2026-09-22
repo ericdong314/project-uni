@@ -4,7 +4,7 @@ services:
       context: .
       target: prod
     entrypoint:
-      - /src/collect_and_step_down.sh
+      - /src/entrypoint.sh
     command:
       - gunicorn
       - -c
