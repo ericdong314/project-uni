@@ -11,6 +11,8 @@ services:
       - runserver
       - 0.0.0.0:8000
 #      - 172.18.0.3:8000 # container interface ip (can be used instead of 0.0.0.0)
+    volumes:
+      - ./src:/src
     ports:
       - "8000:8000"
   db:
