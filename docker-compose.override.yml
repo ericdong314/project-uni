@@ -18,3 +18,8 @@ services:
   db:
     env_file:
       - ./.env.dev
+    volumes:
+      - db_volume_dev:/var/lib/postgresql/
+
+volumes:
+  db_volume_dev:

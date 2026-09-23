@@ -7,9 +7,5 @@ services:
     container_name: db
     image: postgres:18
     restart: unless-stopped
-    volumes:
-      - db-data:/var/lib/postgresql/
     ports:
       - "5432:5432"
-volumes:
-  db-data:
