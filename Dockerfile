@@ -12,4 +12,5 @@ COPY requirements/dev.txt /tmp/requirements/dev.txt
 RUN pip install -r /tmp/requirements/dev.txt
 
 FROM base AS prod
+RUN chmod +x /src/entrypoint.sh
 RUN adduser --uid 1234 nonroot
