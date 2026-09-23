@@ -27,7 +27,8 @@ services:
       - static_volume:/var/www/staticfiles/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ${CERT_DIR}:/etc/nginx/ssl:ro
+      - ${SSL_CERT}:/etc/nginx/ssl/fullchain.pem:ro
+      - ${SSL_KEY}:/etc/nginx/ssl/privkey.pem:ro
     ports:
       - "443:443"
     depends_on:
