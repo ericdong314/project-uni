@@ -1,0 +1,95 @@
+- hosts: all
+  tasks:
+    - name: Install docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Add user to the docker group
+      ansible.builtin.user:
+        name: '{{ ansible_user }}'
+        groups: docker
+        append: true # don't remove any existing groups
+      become: true
+
+    - name: Reset connection to reflect group change
+      ansible.builtin.meta: reset_connection
+
+    - name: Build project image locally
+      ansible.builtin.command: docker build -t uni ..
+      delegate_to: 127.0.0.1
+
+    - name: Export project image locally
+      community.docker.docker_image:
+        name: uni
+        archive_path: /tmp/uni-img.tar
+        source: local
+      delegate_to: 127.0.0.1
+
+    - name: Copy archive to server
+      ansible.builtin.copy:
+        src: /tmp/uni-img.tar
+        dest: /tmp/uni-img.tar
+
+    - name: Load image from archive
+      community.docker.docker_image:
+        name: uni
+        source: load
+        load_path: /tmp/uni-img.tar
+        force_source: true
+
+    - name: Create a random password on the server if haven't
+      ansible.builtin.copy:
+        dest: ~/.secret-key
+        content: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
+        mode: 0600
+        force: false  # do not recreate file if it already exists.
+
+    - name: Read secret key back from file
+      ansible.builtin.slurp:
+        src: ~/.secret-key
+      register: secret_key
+
+    - name: Ensure db.sqlite3 exists outside container
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env'].HOME }}/db.sqlite3"
+        state: touch
+        owner: 1234
+      become: true
+
+    - name: Copy tls cert and key with owner change
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/etc/letsencrypt/archive/{{ inventory_hostname }}/"
+        dest: "{{ ansible_facts['env'].HOME }}/tls"
+        owner: 1234
+      become: true
+
+    - name: Spin up a container using the image
+      community.docker.docker_container:
+        name: uni
+        image: uni
+        state: started
+        recreate: true
+        env:
+          DJANGO_DEBUG_FALSE: "1"
+          DJANGO_SECRET_KEY: "{{ secret_key.content | b64decode }}"
+          DJANGO_DB_PATH: "/home/nonroot/db.sqlite3"
+          DJANGO_ALLOWED_HOST: "{{ inventory_hostname }}"
+          TLS_DIR: "/home/nonroot/tls"
+        ports: 443:8888
+        mounts:
+          - type: bind
+            source: "{{ ansible_facts['env'].HOME }}/db.sqlite3"
+            target: /home/nonroot/db.sqlite3
+          - type: bind
+            source:  "{{ ansible_facts['env'].HOME }}/tls"
+            target: /home/nonroot/tls
+            read_only: true
+
+    - name: Run migration inside container
+      community.docker.docker_container_exec:
+        container: uni
+        command: python3 ./manage.py migrate

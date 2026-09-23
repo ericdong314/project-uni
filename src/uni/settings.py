@@ -9,7 +9,11 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import os
+from logging import DEBUG
 from pathlib import Path
+
+from django.conf.global_settings import SECRET_KEY, CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,17 +22,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-78+=b^@_0i5r^#)v-q+@$vjuf(cusz5&s5)limu8!42oofj_-4'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['library-env.eba-674emtxm.us-west-2.elasticbeanstalk.com', 'localhost']
+if "DJANGO_DEBUG_FALSE" in os.environ:
+    DEBUG = False
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOST']]
+    db_path = os.environ['DJANGO_DB_PATH']
+else:
+    DEBUG = True
+    SECRET_KEY = 'django-insecure-key-for-dev'
+    db_path = BASE_DIR / 'db.sqlite3'
 
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic', # handle static files with whitenoise in development
+    'whitenoise.runserver_nostatic',  # handle static files with whitenoise in development
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,6 +86,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_path,
     }
 }
 
@@ -115,7 +124,6 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-
 # Static file serving caching.
 # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
 STORAGES = {
@@ -133,3 +141,18 @@ LOGIN_REDIRECT_URL = '/'
 
 # log emails sent to the console.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "root": {"handlers": ["console"], "level": "INFO"},
+    },
+}
+
+# todo: if enabled, causes CSRF error when creating new item
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
