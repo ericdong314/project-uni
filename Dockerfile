@@ -1,20 +1,15 @@
-FROM python:3.14-slim
-
+FROM python:3.14-slim AS base
+RUN apt-get update && apt-get install -y gosu postgresql-client
 RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
-
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-
+COPY requirements/base.txt /tmp/requirements/base.txt
+RUN pip install -r /tmp/requirements/base.txt
 COPY src /src
 WORKDIR /src
 
-RUN python manage.py collectstatic --noinput # Error if placed after the setting of DJANGO_DEBUG_FALSE.
-ENV DJANGO_DEBUG_FALSE=1
+FROM base AS dev
+COPY requirements/dev.txt /tmp/requirements/dev.txt
+RUN pip install -r /tmp/requirements/dev.txt
 
+FROM base AS prod
 RUN adduser --uid 1234 nonroot
-USER nonroot
-
-#CMD ["gunicorn", "--bind", ":8888", "uni.wsgi:application"]
-# env vars are not treated as literal strings with the [] format
-CMD gunicorn --certfile=$TLS_DIR/fullchain1.pem --keyfile=$TLS_DIR/privkey1.pem --bind :8888 uni.wsgi:application

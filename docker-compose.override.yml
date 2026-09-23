@@ -1,0 +1,25 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    env_file:
+      - ./.env.dev
+    command:
+      - python3
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000
+#      - 172.18.0.3:8000 # container interface ip (can be used instead of 0.0.0.0)
+    volumes:
+      - ./src:/src
+    ports:
+      - "8000:8000"
+  db:
+    env_file:
+      - ./.env.dev
+    volumes:
+      - db_volume_dev:/var/lib/postgresql/
+
+volumes:
+  db_volume_dev:

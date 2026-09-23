@@ -13,7 +13,7 @@ import os
 from logging import DEBUG
 from pathlib import Path
 
-from django.conf.global_settings import SECRET_KEY, CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE
+from django.conf.global_settings import SECRET_KEY, CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE, CSRF_TRUSTED_ORIGINS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,20 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
-if "DJANGO_DEBUG_FALSE" in os.environ:
-    DEBUG = False
-    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOST']]
-    db_path = os.environ['DJANGO_DB_PATH']
-else:
-    DEBUG = True
+DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", "0")))
+if DEBUG:
     SECRET_KEY = 'django-insecure-key-for-dev'
-    db_path = BASE_DIR / 'db.sqlite3'
+else:
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    ALLOWED_HOSTS = [host.strip() for host in os.environ['DJANGO_ALLOWED_HOSTS'].split(',') if host.strip()]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',  # handle static files with whitenoise in development
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +47,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,9 +79,12 @@ WSGI_APPLICATION = 'uni.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': db_path,
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['DB_HOSTNAME'],
+        'PORT': '5432',
     }
 }
 
@@ -124,14 +122,6 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-# Static file serving caching.
-# https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -153,6 +143,7 @@ LOGGING = {
     },
 }
 
+CSRF_TRUSTED_ORIGINS=['http://localhost:9000']
 # todo: if enabled, causes CSRF error when creating new item
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
