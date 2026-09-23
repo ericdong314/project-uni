@@ -31,6 +31,7 @@ services:
       - ${SSL_KEY}:/etc/nginx/ssl/privkey.pem:ro
     ports:
       - "443:443"
+      - "80:80"
     depends_on:
       - web
 
