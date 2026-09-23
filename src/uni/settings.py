@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
-from logging import DEBUG
 from pathlib import Path
 
-from django.conf.global_settings import SECRET_KEY, CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE, CSRF_TRUSTED_ORIGINS
+def str_to_list(s:str):
+    return [x.strip() for x in s.split(',') if x.strip()]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +28,7 @@ if DEBUG:
     SECRET_KEY = 'django-insecure-key-for-dev'
 else:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    ALLOWED_HOSTS = [host.strip() for host in os.environ['DJANGO_ALLOWED_HOSTS'].split(',') if host.strip()]
+    ALLOWED_HOSTS = str_to_list(os.environ['DJANGO_ALLOWED_HOSTS'])
 
 # Application definition
 
@@ -143,7 +143,6 @@ LOGGING = {
     },
 }
 
-CSRF_TRUSTED_ORIGINS=['http://localhost:9000']
-# todo: if enabled, causes CSRF error when creating new item
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS=str_to_list(os.environ['DJANGO_CSRF_TRUSTED_ORIGINS'])
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
