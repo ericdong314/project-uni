@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
-def str_to_list(s:str):
+
+def str_to_list(s: str):
     return [x.strip() for x in s.split(',') if x.strip()]
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -143,6 +145,6 @@ LOGGING = {
     },
 }
 
-CSRF_TRUSTED_ORIGINS=str_to_list(os.environ['DJANGO_CSRF_TRUSTED_ORIGINS'])
+CSRF_TRUSTED_ORIGINS = str_to_list(os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', ''))
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
