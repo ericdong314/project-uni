@@ -62,8 +62,8 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys("Buy a notebook.")
         input_box.send_keys(Keys.ENTER)
 
-        self.wait_for_row_text_in_table('1: Buy a new pen.')
         self.wait_for_row_text_in_table('2: Buy a notebook.')
+        self.wait_for_row_text_in_table('1: Buy a new pen.')
 
         # She is now happy and closes the tab.
 
@@ -82,6 +82,7 @@ class NewVisitorTest(LiveServerTestCase):
         # Patrick now visits the site and add an item to his list.
         ## We use cookie deletion to simulate the change of users.
         self.browser.delete_all_cookies()
+        self.browser.get(self.live_server_url + '/todo/')
 
         page_text = self.browser.find_element(By.TAG_NAME, 'body').text
         self.assertNotIn('Buy a new pen.', page_text)

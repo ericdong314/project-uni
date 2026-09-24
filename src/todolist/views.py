@@ -1,6 +1,4 @@
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse
 
 from .models import Item
 
@@ -10,7 +8,10 @@ def home_page(request):
     if request.method == 'POST':
         text = request.POST['item_text']
         Item.objects.create(text=text)
-        return redirect('todolist:home')
+        return redirect('/todo/lists/the-ultimate-list/')
+    return render(request, 'home.html')
 
+
+def list_view(request):
     context = {'item_list': Item.objects.all()}
-    return render(request, 'home.html', context=context)
+    return render(request, 'list.html', context=context)
