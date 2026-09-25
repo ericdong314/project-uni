@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from .models import Item
+from .models import Item, List
 
 
 # Create your views here.
@@ -12,7 +12,9 @@ def list_view(request):
     context = {'item_list': Item.objects.all()}
     return render(request, 'list.html', context=context)
 
+
 def create_view(request):
+    the_list = List.objects.create()
     text = request.POST['item_text']
-    Item.objects.create(text=text)
+    Item.objects.create(text=text, list=the_list)
     return redirect('/todo/lists/the-ultimate-list/')

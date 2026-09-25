@@ -1,12 +1,30 @@
-from django.http import HttpRequest
 from django.test import TestCase
-from django.urls import reverse
+from .models import List, Item
 
-from .models import Item
-from .views import home_page
+class ListAndItemModelsTest(TestCase):
+    def test_saving_and_retrieving_items(self):
+        my_list = List()
+        my_list.save()
+
+        first_item = Item(text='I am the first item.')
+        first_item.list = my_list
+        first_item.save()
+
+        second_item = Item(text='I am the second item.')
+        second_item.list = my_list
+        second_item.save()
+
+        saved_list = List.objects.get()
+        self.assertEqual(saved_list, my_list)
+
+        saved_items = Item.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+        self.assertEqual(saved_items[0].text, 'I am the first item.')
+        self.assertEqual(saved_items[0].list, my_list)
+        self.assertEqual(saved_items[1].text, 'I am the second item.')
+        self.assertEqual(saved_items[1].list, my_list)
 
 
-# Create your tests here.
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
         response = self.client.get('/todo/')
@@ -30,8 +48,9 @@ class ListViewTest(TestCase):
 
     def test_display_all_list_items(self):
         # Arrange/Given
-        Item.objects.create(text='foo')
-        Item.objects.create(text='bar')
+        the_list = List.objects.create()
+        Item.objects.create(text='foo', list=the_list)
+        Item.objects.create(text='bar', list=the_list)
 
         # Act/When
         response = self.client.get('/todo/lists/the-ultimate-list/')
