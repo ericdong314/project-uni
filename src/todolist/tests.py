@@ -1,5 +1,8 @@
+from pkgutil import resolve_name
+
 from django.test import TestCase
 from .models import List, Item
+
 
 class ListAndItemModelsTest(TestCase):
     def test_saving_and_retrieving_items(self):
@@ -41,27 +44,33 @@ class HomePageTest(TestCase):
 
 
 class ListViewTest(TestCase):
+    def test_uses_list_view_template(self):
+        my_list = List.objects.create()
+        response = self.client.get(f'/todo/lists/{my_list.id}/')
+        self.assertTemplateUsed(response, 'list.html')
+
     def test_renders_input_form(self):
-        response = self.client.get("/todo/lists/the-ultimate-list/")
+        mylist = List.objects.create()
+        response = self.client.get(f"/todo/lists/{mylist.id}/")
         self.assertContains(response, '<form action="/todo/lists/new/" method="post">')
         self.assertContains(response, 'name="item_text"')
 
-    def test_display_all_list_items(self):
+    def test_display_only_items_on_that_list(self):
         # Arrange/Given
-        the_list = List.objects.create()
-        Item.objects.create(text='foo', list=the_list)
-        Item.objects.create(text='bar', list=the_list)
+        mylist = List.objects.create()
+        Item.objects.create(text='foo', list=mylist)
+        Item.objects.create(text='bar', list=mylist)
+
+        another_list = List.objects.create()
+        Item.objects.create(text='I should be on another_list', list=another_list)
 
         # Act/When
-        response = self.client.get('/todo/lists/the-ultimate-list/')
+        response = self.client.get(f'/todo/lists/{mylist.id}/')
 
         # Assert/Then
         self.assertContains(response, 'foo')
         self.assertContains(response, 'bar')
-
-    def test_uses_list_view_template(self):
-        response = self.client.get('/todo/lists/the-ultimate-list/')
-        self.assertTemplateUsed(response, 'list.html')
+        self.assertNotContains(response, 'I should be on another_list')
 
 
 class NewListTest(TestCase):
@@ -72,4 +81,5 @@ class NewListTest(TestCase):
 
     def test_redirect_after_post_request(self):
         response = self.client.post('/todo/lists/new/', {'item_text': 'A new item.'})
-        self.assertRedirects(response, '/todo/lists/the-ultimate-list/')
+        list_created = List.objects.get()
+        self.assertRedirects(response, f'/todo/lists/{list_created.id}/')
