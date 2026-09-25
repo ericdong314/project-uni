@@ -52,7 +52,7 @@ class ListViewTest(TestCase):
     def test_renders_input_form(self):
         mylist = List.objects.create()
         response = self.client.get(f"/todo/lists/{mylist.id}/")
-        self.assertContains(response, '<form action="/todo/lists/new/" method="post">')
+        self.assertContains(response, f'<form action="/todo/lists/{mylist.id}/add_item/" method="post">')
         self.assertContains(response, 'name="item_text"')
 
     def test_display_only_items_on_that_list(self):
@@ -83,3 +83,19 @@ class NewListTest(TestCase):
         response = self.client.post('/todo/lists/new/', {'item_text': 'A new item.'})
         list_created = List.objects.get()
         self.assertRedirects(response, f'/todo/lists/{list_created.id}/')
+
+
+class NewItemTest(TestCase):
+    def test_can_save_post_request_to_an_existing_list(self):
+        mylist = List.objects.create()
+        self.client.post(f'/todo/lists/{mylist.id}/add_item/', {'item_text': 'first item.'})
+        self.client.post(f'/todo/lists/{mylist.id}/add_item/', {'item_text': 'second item.'})
+        self.assertEqual(Item.objects.filter(list=mylist).count(), 2)
+
+    def test_redirect_after_post_request(self):
+        mylist = List.objects.create()
+        otherlist = List.objects.create()  # test for silliness
+        response = self.client.post(f'/todo/lists/{mylist.id}/add_item/', {'item_text': 'A new item.'})
+        self.assertRedirects(response, f'/todo/lists/{mylist.id}/')
+
+

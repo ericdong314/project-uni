@@ -5,6 +5,7 @@ from . import views
 app_name = 'todolist'
 urlpatterns = [
     path('', views.home_page, name='home'),
-    path('lists/<int:list_id>/', views.list_view, name='view_list'),
-    path('lists/new/', views.create_view, name='new_item'),
+    path('lists/new/', views.new_list, name='new_list'),
+    path('lists/<int:list_id>/', views.view_list, name='view_list'),
+    path('lists/<int:list_id>/add_item/', views.add_list_item, name='add_list_item'),
 ]
