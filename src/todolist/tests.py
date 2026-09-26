@@ -31,7 +31,7 @@ class ListAndItemModelsTest(TestCase):
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
         response = self.client.get('/todo/')
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertTemplateUsed(response, 'todolist/home.html')
 
     def test_renders_homepage_content(self):
         response = self.client.get('/todo/')
@@ -47,7 +47,7 @@ class ListViewTest(TestCase):
     def test_uses_list_view_template(self):
         my_list = List.objects.create()
         response = self.client.get(f'/todo/lists/{my_list.id}/')
-        self.assertTemplateUsed(response, 'list.html')
+        self.assertTemplateUsed(response, 'todolist/list.html')
 
     def test_renders_input_form(self):
         mylist = List.objects.create()

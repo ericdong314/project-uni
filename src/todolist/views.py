@@ -5,12 +5,12 @@ from .models import Item, List
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'home.html')
+    return render(request, 'todolist/home.html')
 
 
 def view_list(request, list_id):
     context = {'list': List.objects.get(pk=list_id)}
-    return render(request, 'list.html', context=context)
+    return render(request, 'todolist/list.html', context=context)
 
 
 def new_list(request):
