@@ -40,7 +40,9 @@ class HomePageTest(TestCase):
     def test_renders_input_form(self):
         response = self.client.get("/todo/")
         self.assertContains(response, '<form action="/todo/lists/new/" method="post">')
-        self.assertContains(response, 'name="item_text"')
+        self.assertContains(response,
+                            '<input name="item_text" id="id_new_item" placeholder="Enter a to-do item">',
+                            html=True)
 
 
 class ListViewTest(TestCase):
@@ -53,7 +55,9 @@ class ListViewTest(TestCase):
         mylist = List.objects.create()
         response = self.client.get(f"/todo/lists/{mylist.id}/")
         self.assertContains(response, f'<form action="/todo/lists/{mylist.id}/add_item/" method="post">')
-        self.assertContains(response, 'name="item_text"')
+        self.assertContains(response,
+                            '<input name="item_text" id="id_new_item" placeholder="Enter a to-do item">',
+                            html=True)
 
     def test_display_only_items_on_that_list(self):
         # Arrange/Given
@@ -97,5 +101,3 @@ class NewItemTest(TestCase):
         otherlist = List.objects.create()  # test for silliness
         response = self.client.post(f'/todo/lists/{mylist.id}/add_item/', {'item_text': 'A new item.'})
         self.assertRedirects(response, f'/todo/lists/{mylist.id}/')
-
-

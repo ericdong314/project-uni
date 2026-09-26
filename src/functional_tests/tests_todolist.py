@@ -1,7 +1,7 @@
 import os
 import time
 
-from django.test import LiveServerTestCase, override_settings
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common import WebDriverException
 from selenium.webdriver.common.by import By
@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 MAX_WAIT = 5
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self) -> None:
         self.browser = webdriver.Firefox()
         if test_server := os.environ.get('TEST_SERVER'):
