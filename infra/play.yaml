@@ -1,0 +1,5 @@
+- hosts: all
+  tasks:
+    - name: Create git archive
+      ansible.builtin.command: git archive -o latest.tar HEAD
+      delegate_to: 127.0.0.1
