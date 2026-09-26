@@ -28,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", "0")))
 if DEBUG:
     SECRET_KEY = 'django-insecure-key-for-dev'
+    ALLOWED_HOSTS = ['localhost']
 else:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     ALLOWED_HOSTS = str_to_list(os.environ['DJANGO_ALLOWED_HOSTS'])

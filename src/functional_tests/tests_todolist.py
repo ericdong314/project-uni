@@ -11,10 +11,17 @@ MAX_WAIT = 5
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
+    host = '0.0.0.0'
+    port = 8001
+
     def setUp(self) -> None:
-        self.browser = webdriver.Firefox()
+        # self.browser = webdriver.Firefox()
+        options = webdriver.FirefoxOptions()
+        self.browser = webdriver.Remote('http://host.docker.internal:4444', options=options)
         if test_server := os.environ.get('TEST_SERVER'):
             self.live_server_url = 'http://' + test_server
+        else:
+            self.live_server_url = f'http://localhost:{self.port}'
 
     def tearDown(self) -> None:
         self.browser.quit()
