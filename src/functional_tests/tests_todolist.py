@@ -15,8 +15,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
     port = 8001
 
     def setUp(self) -> None:
-        # self.browser = webdriver.Firefox()
-        options = webdriver.FirefoxOptions()
+        options = webdriver.ChromeOptions()
         self.browser = webdriver.Remote('http://host.docker.internal:4444', options=options)
         if test_server := os.environ.get('TEST_SERVER'):
             self.live_server_url = 'http://' + test_server
