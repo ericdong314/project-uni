@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <title>To-Do lists</title>
     <meta charset="UTF-8">
@@ -10,11 +10,15 @@
 
 <body>
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center p-5 bg-body-tertiary rounded-3">
         <div class="col-lg-6 text-center">
-            <h1>{% block header_text %}{% endblock %}</h1>
+            <h1 class="display-1 mb-4">{% block header_text %}{% endblock %}</h1>
             <form action="{% block form_action %}{% endblock %}" method="post">
-                <input id="id_new_item" name="item_text" placeholder="Enter a to-do item">
+                <input class="form-control form-control-lg"
+                        id="id_new_item"
+                       name="item_text"
+                       placeholder="Enter a to-do item"
+                >
                 {% csrf_token %}
             </form>
         </div>
