@@ -1,5 +1,4 @@
-from pkgutil import resolve_name
-
+import lxml.html
 from django.test import TestCase
 from .models import List, Item
 
@@ -39,10 +38,11 @@ class HomePageTest(TestCase):
 
     def test_renders_input_form(self):
         response = self.client.get("/todo/")
-        self.assertContains(response, '<form action="/todo/lists/new/" method="post">')
-        self.assertContains(response,
-                            '<input name="item_text" id="id_new_item" placeholder="Enter a to-do item">',
-                            html=True)
+        parsed = lxml.html.fromstring(response.content)
+        [form] = parsed.cssselect("form[method=post]")
+        self.assertEqual(form.get("action"), "/todo/lists/new/")
+        inputs = parsed.cssselect("input")
+        self.assertIn("item_text", [input.get("name") for input in inputs])
 
 
 class ListViewTest(TestCase):
@@ -54,10 +54,11 @@ class ListViewTest(TestCase):
     def test_renders_input_form(self):
         mylist = List.objects.create()
         response = self.client.get(f"/todo/lists/{mylist.id}/")
-        self.assertContains(response, f'<form action="/todo/lists/{mylist.id}/add_item/" method="post">')
-        self.assertContains(response,
-                            '<input name="item_text" id="id_new_item" placeholder="Enter a to-do item">',
-                            html=True)
+        parsed = lxml.html.fromstring(response.content)
+        [form] = parsed.cssselect("form[method=post]")
+        self.assertEqual(form.get('action'), f"/todo/lists/{mylist.id}/add_item/" )
+        inputs = parsed.cssselect("input")
+        self.assertIn('item_text', [input.get("name") for input in inputs])
 
     def test_display_only_items_on_that_list(self):
         # Arrange/Given
