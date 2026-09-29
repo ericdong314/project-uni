@@ -1,6 +1,6 @@
 import lxml.html
 from django.test import TestCase
-from .models import List, Item
+from todolist.models import List, Item
 
 
 class ListAndItemModelsTest(TestCase):
