@@ -1,43 +1,12 @@
-import os
 import time
-
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
-from selenium.common import WebDriverException
+from unittest import skip
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-MAX_WAIT = 5
+from .base import FunctionalTest
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
-    host = '0.0.0.0'
-    port = 8001
-
-    def setUp(self) -> None:
-        options = webdriver.ChromeOptions()
-        self.browser = webdriver.Remote('http://host.docker.internal:4444', options=options)
-        if test_server := os.environ.get('TEST_SERVER'):
-            self.live_server_url = 'http://' + test_server
-        else:
-            self.live_server_url = f'http://localhost:{self.port}'
-
-    def tearDown(self) -> None:
-        self.browser.quit()
-
-    def wait_for_row_in_list_table(self, text):
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element(By.ID, 'id_list_table')
-                rows = table.find_elements(By.TAG_NAME, 'tr')
-                self.assertIn(text, [row.text for row in rows])
-                return
-            except (AssertionError, WebDriverException):
-                if time.time() > start_time + MAX_WAIT:
-                    raise
-                time.sleep(0.5)
-
+class NewVisitorTest(FunctionalTest):
     def test_create_items(self):
         # Edith visits the website and notices that the page title and header mention to-do lists.
         self.browser.get(self.live_server_url + '/todo/')
@@ -72,32 +41,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.wait_for_row_in_list_table('1: Buy a new pen.')
 
         # She is now happy and closes the tab.
-
-    def test_layout_and_styling(self):
-        # Edith goes to the home page,
-        self.browser.get(self.live_server_url + '/todo/')
-
-        # Her browser window is set to a very specific size
-        self.browser.set_window_size(1024, 768)
-
-        # She notices the input box is nicely centered
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
-        self.assertAlmostEqual(
-            inputbox.location["x"] + inputbox.size["width"] / 2,
-            512,
-            delta=10,
-        )
-        # She starts a new list and sees the input is nicely
-        # centered there too
-        inputbox.send_keys("testing")
-        inputbox.send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table("1: testing")
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
-        self.assertAlmostEqual(
-            inputbox.location["x"] + inputbox.size["width"] / 2,
-            512,
-            delta=10,
-        )
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
         # Edith visits the site first and add an item to her list
