@@ -3,30 +3,6 @@ from django.test import TestCase
 from todolist.models import List, Item
 
 
-class ListAndItemModelsTest(TestCase):
-    def test_saving_and_retrieving_items(self):
-        my_list = List()
-        my_list.save()
-
-        first_item = Item(text='I am the first item.')
-        first_item.list = my_list
-        first_item.save()
-
-        second_item = Item(text='I am the second item.')
-        second_item.list = my_list
-        second_item.save()
-
-        saved_list = List.objects.get()
-        self.assertEqual(saved_list, my_list)
-
-        saved_items = Item.objects.all()
-        self.assertEqual(saved_items.count(), 2)
-        self.assertEqual(saved_items[0].text, 'I am the first item.')
-        self.assertEqual(saved_items[0].list, my_list)
-        self.assertEqual(saved_items[1].text, 'I am the second item.')
-        self.assertEqual(saved_items[1].list, my_list)
-
-
 class HomePageTest(TestCase):
     def test_uses_home_template(self):
         response = self.client.get('/todo/')
@@ -56,7 +32,7 @@ class ListViewTest(TestCase):
         response = self.client.get(f"/todo/lists/{mylist.id}/")
         parsed = lxml.html.fromstring(response.content)
         [form] = parsed.cssselect("form[method=post]")
-        self.assertEqual(form.get('action'), f"/todo/lists/{mylist.id}/add_item/" )
+        self.assertEqual(form.get('action'), f"/todo/lists/{mylist.id}/add_item/")
         inputs = parsed.cssselect("input")
         self.assertIn('item_text', [input.get("name") for input in inputs])
 
