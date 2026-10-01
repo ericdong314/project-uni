@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 # Create your models here.
@@ -6,5 +7,7 @@ class Item(models.Model):
     text = models.TextField(default='')
     list = models.ForeignKey('List', on_delete=models.RESTRICT, default=None)
 
+
 class List(models.Model):
-    pass
+    def get_absolute_url(self):
+        return reverse('todolist:view_list', args=[self.id])
