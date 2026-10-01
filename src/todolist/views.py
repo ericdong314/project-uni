@@ -10,6 +10,10 @@ def home_page(request):
 
 
 def view_list(request, list_id):
+    if request.method == 'POST':
+        text = request.POST['item_text']
+        Item.objects.create(text=text, list_id=list_id)
+        return redirect(f'/todo/lists/{list_id}/')
     context = {'list': List.objects.get(pk=list_id)}
     return render(request, 'todolist/list.html', context=context)
 
@@ -27,7 +31,3 @@ def new_list(request):
     return redirect(f'/todo/lists/{nulist.id}/')
 
 
-def add_list_item(request, list_id):
-    text = request.POST['item_text']
-    Item.objects.create(text=text, list_id=list_id)
-    return redirect(f'/todo/lists/{list_id}/')
