@@ -1,4 +1,6 @@
 import lxml.html
+from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from todolist.models import List, Item
 
@@ -25,3 +27,15 @@ class ListAndItemModelsTest(TestCase):
         self.assertEqual(saved_items[0].list, my_list)
         self.assertEqual(saved_items[1].text, 'I am the second item.')
         self.assertEqual(saved_items[1].list, my_list)
+
+    def test_cannot_save_null_list_items(self):
+        mylist = List.objects.create()
+        item = Item(list=mylist, text=None)
+        with self.assertRaises(IntegrityError) as cm:
+            item.save()
+
+    def test_cannot_save_empty_list_item(self):
+        mylist = List.objects.create()
+        item = Item(list=mylist, text='')
+        with self.assertRaises(ValidationError) as cm:
+            item.full_clean()
