@@ -20,29 +20,29 @@ class HomePageTest(TestCase):
         [form] = parsed.cssselect("form[method=post]")
         self.assertEqual(form.get("action"), "/todo/lists/new/")
         inputs = parsed.cssselect("input")
-        self.assertIn("item_text", [input.get("name") for input in inputs])
+        self.assertIn("text", [input.get("name") for input in inputs])
 
 
 class NewListTest(TestCase):
     def test_can_save_post_request(self):
-        self.client.post('/todo/lists/new/', {'item_text': 'A new item.'})
+        self.client.post('/todo/lists/new/', {'text': 'A new item.'})
         self.assertEqual(Item.objects.count(), 1)
         self.assertEqual(Item.objects.last().text, 'A new item.')
 
     def test_redirect_after_post_request(self):
-        response = self.client.post('/todo/lists/new/', {'item_text': 'A new item.'})
+        response = self.client.post('/todo/lists/new/', {'text': 'A new item.'})
         list_created = List.objects.get()
         self.assertRedirects(response, f'/todo/lists/{list_created.id}/')
 
     def test_validation_errors_are_sent_back_to_home_page_template(self):
-        response = self.client.post("/todo/lists/new/", data={"item_text": ""})
+        response = self.client.post("/todo/lists/new/", data={"text": ""})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "todolist/home.html")
         expected_error = html.escape("You can't have an empty list item")
         self.assertContains(response, expected_error)
 
     def test_invalid_list_items_arent_saved(self):
-        self.client.post("/todo/lists/new/", data={"item_text": ""})
+        self.client.post("/todo/lists/new/", data={"text": ""})
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
 
@@ -60,7 +60,7 @@ class ListViewTest(TestCase):
         [form] = parsed.cssselect("form[method=post]")
         self.assertEqual(form.get('action'), f"/todo/lists/{mylist.id}/")
         inputs = parsed.cssselect("input")
-        self.assertIn('item_text', [input.get("name") for input in inputs])
+        self.assertIn('text', [input.get("name") for input in inputs])
 
     def test_display_only_items_on_that_list(self):
         # Arrange/Given
@@ -81,25 +81,25 @@ class ListViewTest(TestCase):
 
     def test_can_save_post_request_to_an_existing_list(self):
         mylist = List.objects.create()
-        self.client.post(f'/todo/lists/{mylist.id}/', {'item_text': 'first item.'})
-        self.client.post(f'/todo/lists/{mylist.id}/', {'item_text': 'second item.'})
+        self.client.post(f'/todo/lists/{mylist.id}/', {'text': 'first item.'})
+        self.client.post(f'/todo/lists/{mylist.id}/', {'text': 'second item.'})
         self.assertEqual(Item.objects.filter(list=mylist).count(), 2)
 
     def test_redirect_after_post_request(self):
         mylist = List.objects.create()
         otherlist = List.objects.create()  # test for silliness
-        response = self.client.post(f'/todo/lists/{mylist.id}/', {'item_text': 'A new item.'})
+        response = self.client.post(f'/todo/lists/{mylist.id}/', {'text': 'A new item.'})
         self.assertRedirects(response, f'/todo/lists/{mylist.id}/')
 
     def test_validation_errors_are_sent_back_to_home_page_template(self):
         mylist = List.objects.create()
-        response = self.client.post(f"/todo/lists/{mylist.id}/", data={"item_text": ""})
+        response = self.client.post(f"/todo/lists/{mylist.id}/", data={"text": ""})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "todolist/list.html")
         expected_error = html.escape("You can't have an empty list item")
         self.assertContains(response, expected_error)
 
     def test_invalid_list_items_arent_saved(self):
-        self.client.post("/todo/lists/new/", data={"item_text": ""})
+        self.client.post("/todo/lists/new/", data={"text": ""})
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)

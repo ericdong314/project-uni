@@ -4,7 +4,7 @@ from todolist.forms import ItemForm, EMPTY_ITEM_ERROR
 
 
 class ItemFormTest(TestCase):
-    def test_form_renders_item_text_input(self):
+    def test_form_renders__input(self):
         form = ItemForm()
         rendered = form.as_p()
         self.assertIn('placeholder="Enter a to-do item"', rendered)
