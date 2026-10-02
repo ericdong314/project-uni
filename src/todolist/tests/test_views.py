@@ -2,6 +2,7 @@ import lxml.html
 from django.test import TestCase
 from django.utils import html
 
+from todolist.forms import EMPTY_ITEM_ERROR
 from todolist.models import List, Item
 
 
@@ -34,17 +35,23 @@ class NewListTest(TestCase):
         list_created = List.objects.get()
         self.assertRedirects(response, f'/todo/lists/{list_created.id}/')
 
-    def test_validation_errors_are_sent_back_to_home_page_template(self):
-        response = self.client.post("/todo/lists/new/", data={"text": ""})
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "todolist/home.html")
-        expected_error = html.escape("You can't have an empty list item")
-        self.assertContains(response, expected_error)
+    def send_invalid_post(self):
+        return self.client.post("/todo/lists/new/", data={"text": ""})
 
-    def test_invalid_list_items_arent_saved(self):
-        self.client.post("/todo/lists/new/", data={"text": ""})
+    def test_invalid_post_db_not_save(self):
+        self.send_invalid_post()
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(Item.objects.count(), 0)
+
+    def test_invalid_post_handled_using_correct_template(self):
+        response = self.send_invalid_post()
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "todolist/home.html")
+
+    def test_invalid_post_error_msg(self):
+        response = self.send_invalid_post()
+        expected_error = html.escape(EMPTY_ITEM_ERROR)
+        self.assertContains(response, expected_error)
 
 
 class ListViewTest(TestCase):
@@ -91,15 +98,20 @@ class ListViewTest(TestCase):
         response = self.client.post(f'/todo/lists/{mylist.id}/', {'text': 'A new item.'})
         self.assertRedirects(response, f'/todo/lists/{mylist.id}/')
 
-    def test_validation_errors_are_sent_back_to_home_page_template(self):
+    def send_invalid_post(self):
         mylist = List.objects.create()
-        response = self.client.post(f"/todo/lists/{mylist.id}/", data={"text": ""})
+        return self.client.post(f"/todo/lists/{mylist.id}/", data={"text": ""})
+
+    def test_invalid_post_nothing_saved_to_db(self):
+        self.send_invalid_post()
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_invalid_post_handled_with_list_template(self):
+        response = self.send_invalid_post()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "todolist/list.html")
-        expected_error = html.escape("You can't have an empty list item")
-        self.assertContains(response, expected_error)
 
-    def test_invalid_list_items_arent_saved(self):
-        self.client.post("/todo/lists/new/", data={"text": ""})
-        self.assertEqual(List.objects.count(), 0)
-        self.assertEqual(Item.objects.count(), 0)
+    def test_invalid_post_gets_error_msg(self):
+        response = self.send_invalid_post()
+        expected_error = html.escape(EMPTY_ITEM_ERROR)
+        self.assertContains(response, expected_error)
