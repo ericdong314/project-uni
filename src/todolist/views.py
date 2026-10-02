@@ -7,13 +7,12 @@ from .models import Item, List
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'todolist/home.html')
+    return render(request, 'todolist/home.html', {'form': ItemForm()})
 
 
 def view_list(request, list_id):
     our_list = List.objects.get(pk=list_id)
     error = None
-    form = ItemForm()
 
     if request.method == 'POST':
         text = request.POST['text']
@@ -24,8 +23,7 @@ def view_list(request, list_id):
             return redirect(our_list)
         except ValidationError:
             error = "You can't have an empty list item"
-    # return render(request, 'todolist/list.html', {'list': our_list, 'error': error, 'form': form})
-    return render(request, 'todolist/list.html', {'list': our_list, 'error': error})
+    return render(request, 'todolist/list.html', {'list': our_list, 'error': error, 'form': ItemForm()})
 
 
 def new_list(request):
