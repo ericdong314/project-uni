@@ -15,8 +15,8 @@
             <h1 class="display-1 mb-4">{% block header_text %}{% endblock %}</h1>
             <form action="{% block form_action %}{% endblock %}" method="post">
                 {{ form.text }}
-                {% if error %}
-                    <div class="invalid-feedback">{{ error }}</div>
+                {% if form.errors %}
+                    <div class="invalid-feedback">{{ form.errors.text }}</div>
                 {% endif %}
                 {% csrf_token %}
             </form>
