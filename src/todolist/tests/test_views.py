@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import html
 from django.urls import reverse
 
-from todolist.forms import EMPTY_ITEM_ERROR
+from todolist.forms import EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR
 from todolist.models import List, Item
 
 
@@ -126,19 +126,16 @@ class ListViewTest(TestCase):
         Item.objects.create(text=unique_text, list=mylist)
         return self.client.post(reverse('todolist:view_list', args=[mylist.id]), data={'text': unique_text})
 
-    @skip
     def test_duplicate_item_saves_not_to_db(self):
         self.try_to_create_a_duplicate_item()
         self.assertEqual(Item.objects.count(), 1)
 
-    @skip
     def test_duplicate_item_creation_handled_with_list_template(self):
         response = self.try_to_create_a_duplicate_item()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'todolist/list.html')
 
-    @skip
     def test_duplicate_item_creation_gets_error_msg(self):
         response = self.try_to_create_a_duplicate_item()
-        expected_error = html.escape('There is already such an item in the list.')
+        expected_error = html.escape(DUPLICATE_ITEM_ERROR)
         self.assertContains(response, expected_error)

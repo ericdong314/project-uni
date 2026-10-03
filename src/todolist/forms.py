@@ -22,6 +22,7 @@ class ItemForm(forms.models.ModelForm):
         self.instance.list = for_list
         return super().save()
 
+
 class ExistingListItemForm(ItemForm):
     def __init__(self, for_list, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,3 +33,6 @@ class ExistingListItemForm(ItemForm):
         if self.instance.list.item_set.filter(text=text).exists():
             raise forms.ValidationError(DUPLICATE_ITEM_ERROR)
         return text
+
+    def save(self):
+        return super(ItemForm, self).save()
