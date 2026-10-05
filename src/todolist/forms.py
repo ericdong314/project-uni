@@ -18,6 +18,14 @@ class ItemForm(forms.models.ModelForm):
             'text': {'required': EMPTY_ITEM_ERROR}
         }
 
+    def is_valid(self):
+        valid = super().is_valid()
+        if not valid:
+            self.fields['text'].widget.attrs['class'] += ' is-invalid'
+        else:
+            return valid
+
+
     def save(self, for_list):
         self.instance.list = for_list
         return super().save()

@@ -24,6 +24,15 @@ class ItemFormTest(TestCase):
         self.assertEqual(new_item.text, 'do me!')
         self.assertEqual(new_item.list, mylist)
 
+    def test_invalid_form_has_bootstrap_is_invalid_css_class(self):
+        form = ItemForm(data={"text": ""})
+        self.assertFalse(form.is_valid())
+        field = form.fields["text"]
+        self.assertEqual(
+            field.widget.attrs["class"],
+            "form-control form-control-lg is-invalid",
+        )
+
 class ExistingListItemFormTest(TestCase):
     def test_form_renders_item_text_input(self):
         list_ = List.objects.create()

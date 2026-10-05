@@ -3,6 +3,7 @@ from unittest import skip
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+from todolist.forms import DUPLICATE_ITEM_ERROR
 from .base import FunctionalTest
 
 
@@ -15,7 +16,6 @@ class ItemValidationTest(FunctionalTest):
 
         # The browser intercepts the request and does not load the list page.
         self.wait_for(lambda: self.browser.find_element(By.CSS_SELECTOR, "#id_text:invalid"))
-
 
         # She starts typing some characters in and the error disappears
         self.get_item_input_box().send_keys("Purchase milk")
@@ -52,6 +52,6 @@ class ItemValidationTest(FunctionalTest):
         self.wait_for(
             lambda: self.assertEqual(
                 self.browser.find_element(By.CSS_SELECTOR, ".invalid-feedback").text,
-                "You've already got this in your list",
+                DUPLICATE_ITEM_ERROR,
             )
         )
