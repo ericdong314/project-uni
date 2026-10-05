@@ -8,7 +8,11 @@ class Item(models.Model):
     list = models.ForeignKey('List', on_delete=models.RESTRICT, default=None)
 
     class Meta:
+        ordering = ('id',)
         unique_together = ('list', 'text')
+
+    def __str__(self) -> str:
+        return self.text
 
 class List(models.Model):
     def get_absolute_url(self):

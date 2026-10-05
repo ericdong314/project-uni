@@ -5,6 +5,10 @@ from todolist.models import List, Item
 
 
 class ItemModelTest(TestCase):
+    def test_representation(self):
+        item = Item(text='I hope to appear.')
+        self.assertEqual(str(item), 'I hope to appear.')
+
     def test_default_text(self):
         item = Item()
         self.assertEqual(item.text, '')
@@ -47,3 +51,10 @@ class ListModelTest(TestCase):
     def test_get_absolute_url(self):
         mylist = List.objects.create()
         self.assertEqual(mylist.get_absolute_url(), f'/todo/lists/{mylist.id}/')
+
+    def test_list_item_ordering(self):
+        mylist = List.objects.create()
+        item1 = Item.objects.create(text='blah', list=mylist)
+        item2 = Item.objects.create(text='aha', list=mylist)
+        item3 = Item.objects.create(text='bam', list=mylist)
+        self.assertSequenceEqual(mylist.item_set.all(), [item1, item2, item3])
