@@ -57,6 +57,12 @@ class NewListTest(TestCase):
         expected_error = html.escape(EMPTY_ITEM_ERROR)
         self.assertContains(response, expected_error)
 
+    def test_for_invalid_input_sets_is_invalid_class(self):
+        response = self.send_invalid_post()
+        parsed = lxml.html.fromstring(response.content)
+        [input] = parsed.cssselect("input[name=text]")
+        self.assertIn("is-invalid", set(input.classes))
+
 
 class ListViewTest(TestCase):
     def test_uses_list_view_template(self):
