@@ -38,12 +38,12 @@ describe("Todolist JavaScript", () => {
     });
 
     it('should not hide error message before input', () => {
-        initialize(inputSelector, errorSelector)
+        initialize(inputSelector)
         expect(errorMsg.checkVisibility()).toBe(true);
     });
 
     it("should hide error message on input", () => {
-        initialize(inputSelector, errorSelector);
+        initialize(inputSelector);
         textInput.dispatchEvent(new InputEvent("input"));
         expect(errorMsg.checkVisibility()).toBe(false);
     });
