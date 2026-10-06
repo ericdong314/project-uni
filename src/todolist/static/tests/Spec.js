@@ -47,4 +47,10 @@ describe("Todolist JavaScript", () => {
         textInput.dispatchEvent(new InputEvent("input"));
         expect(errorMsg.checkVisibility()).toBe(false);
     });
+
+    it('should hide error message on clicking', () => {
+        initialize(inputSelector);
+        textInput.dispatchEvent(new MouseEvent("click"));
+        expect(errorMsg.checkVisibility()).toBe(false)
+    });
 });

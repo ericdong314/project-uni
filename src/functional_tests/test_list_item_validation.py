@@ -59,7 +59,7 @@ class ItemValidationTest(FunctionalTest):
             )
         )
 
-    def test_error_messages_are_cleared_on_input(self):
+    def try_to_create_duplicate_item(self):
         # Edith starts a list and causes a validation error:
         self.browser.get(self.live_server_url + '/todo/')
         self.get_item_input_box().send_keys("Banter too thick")
@@ -67,14 +67,19 @@ class ItemValidationTest(FunctionalTest):
         self.wait_for_row_in_list_table("1: Banter too thick")
         self.get_item_input_box().send_keys("Banter too thick")
         self.get_item_input_box().send_keys(Keys.ENTER)
-        self.wait_for(
-            lambda: self.assertTrue(self.get_error_element().is_displayed())
-        )
+
+    def test_error_messages_are_cleared_on_input(self):
+        self.try_to_create_duplicate_item()
+        self.wait_for(lambda: self.assertTrue(self.get_error_element().is_displayed()))
 
         # She starts typing in the input box to clear the error
         self.get_item_input_box().send_keys("a")
 
         # She is pleased to see that the error message disappears
-        self.wait_for(
-            lambda: self.assertFalse(self.get_error_element().is_displayed())
-        )
+        self.wait_for(lambda: self.assertFalse(self.get_error_element().is_displayed()))
+
+    def test_error_messages_are_cleared_on_clicking_input(self):
+        self.try_to_create_duplicate_item()
+        self.wait_for(lambda: self.assertTrue(self.get_error_element().is_displayed()))
+        self.get_item_input_box().click()
+        self.wait_for(lambda: self.assertFalse(self.get_error_element().is_displayed()))
