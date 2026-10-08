@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'todolist.apps.TodolistConfig',
     'klipper.apps.KlipperConfig',
+    'acc.apps.AccConfig',
 ]
 
 MIDDLEWARE = [
@@ -134,7 +135,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 
 # log emails sent to the console.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 LOGGING = {
     "version": 1,
@@ -150,3 +152,10 @@ LOGGING = {
 CSRF_TRUSTED_ORIGINS = str_to_list(os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', ''))
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+
+# Sending emails
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "unilistx@gmail.com"
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
